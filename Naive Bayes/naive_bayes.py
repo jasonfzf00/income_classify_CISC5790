@@ -7,6 +7,9 @@ from imblearn.over_sampling import RandomOverSampler
 # Load cleaned training data
 train_data = pd.read_csv('census-income.data.csv')
 
+# Drop education and fnlwgt
+train_data = train_data.drop(['education', 'fnlwgt'], axis=1)
+
 # Naive Bayes without oversampling
 X_train_data = train_data.drop('income', axis=1)  # Features
 y_train_data = train_data['income']  # Target variable
@@ -27,14 +30,17 @@ y_pred = naive_bayes_model.predict(X_test)
 
 # Evaluate the model
 accuracy = accuracy_score(y_test, y_pred)
-classification_report_output = classification_report(y_test, y_pred)
+classification_report_train = classification_report(y_test, y_pred)
 
 print(f"Accuracy: {accuracy}")
 print("Classification Report:")
-print(classification_report_output)
+print(classification_report_train)
 
 # Load cleaned testing data
 test_data = pd.read_csv('census-income.test.csv')
+
+# Drop education and fnlwgt
+test_data = test_data.drop(['education', 'fnlwgt'], axis=1)
 
 # Separate features and target variable
 X_test_data = test_data.drop('income', axis=1)
