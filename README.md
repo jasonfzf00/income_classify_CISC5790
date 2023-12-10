@@ -15,7 +15,7 @@ Random Forest
 
 ## Data
 
-All data files are stored in 'Handling Missing Values' folder. For preprocessed file refer to those in 'Raw data'.
+All data files are stored in `Handling Missing Values` folder. For preprocessed file refer to those in `Raw data`.
 Otherwise what you will see is encoded data with number representing different catagories.
 
 ## Code
