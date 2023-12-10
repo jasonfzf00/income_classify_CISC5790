@@ -1,7 +1,6 @@
 # Data processing
 import pandas as pd
 import os
-import preprocess as pre
 
 # Modeling
 from imblearn.over_sampling import RandomOverSampler 
