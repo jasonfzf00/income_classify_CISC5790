@@ -1,7 +1,6 @@
 # Data processing
 import pandas as pd
 import os
-import preprocess as pre
 
 # Modeling
 from imblearn.over_sampling import RandomOverSampler 
@@ -13,6 +12,7 @@ import joblib
 # Visualization and model evaluation
 import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, ConfusionMatrixDisplay
+
 
 def build_random_forest(df):
     x = df.drop(columns=['fnlwgt', 'income'], axis=1)
@@ -54,6 +54,7 @@ def model_evaluation(test_df, write_result = False,rf_file = 'rf.joblib'):
     rf = joblib.load(rf_file)
     x = test_df.drop(columns=['fnlwgt', 'income'], axis=1)
     y = test_df['income']
+    
     #Use provided Random Forest Classifier to predict for given y
     y_pred = rf.predict(x)
     
@@ -77,14 +78,23 @@ def model_evaluation(test_df, write_result = False,rf_file = 'rf.joblib'):
     print("Recall:", recall)
 
 def main():
-    #Read the data
-    df_train = pd.read_csv('/Users/jasonfzf/Desktop/gradSchool/2023F/dataMining/default_project/income_classify_CISC5790/Handling Missing Values/census-income.data.csv')
-    df_test = pd.read_csv('/Users/jasonfzf/Desktop/gradSchool/2023F/dataMining/default_project/income_classify_CISC5790/Handling Missing Values/census-income.test.csv')
-    rf = build_random_forest(df_train)
+    # Read the data
+    file_path = os.path.dirname(os.getcwd())
+    
+    df_train = pd.read_csv(file_path+'/Handling Missing Values/census-income.data.csv')
+    df_test = pd.read_csv(file_path+'/Handling Missing Values/census-income.test.csv')
+
+    # Check if model exists, build if not
+    if not os.path.exists(file_path+'/randomForest/rf.joblib'):
+        rf = build_random_forest(df_train)
+    else:
+        print('exists')
+        
     # Evaluate Train dataset
-    model_evaluation(rf,df_test,True)
+    model_evaluation(df_train)
     
     # Evaluate Test dataset
+    model_evaluation(df_test,True)
     
 if __name__ == "__main__":
     main()
