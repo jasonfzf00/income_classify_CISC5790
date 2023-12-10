@@ -8,6 +8,7 @@ from imblearn.over_sampling import RandomOverSampler
 from sklearn.model_selection import RandomizedSearchCV, train_test_split
 from scipy.stats import randint
 from sklearn.ensemble import RandomForestClassifier
+import joblib
 
 # Visualization and model evaluation
 import matplotlib.pyplot as plt
@@ -44,10 +45,13 @@ def build_random_forest(df):
     # Print the best hyperparameters
     print('Best hyperparameters:',  rand_search.best_params_)
     
+    joblib.dump(best_rf, 'rf.joblib')
+    
     return best_rf
 
 # Make predictions and evaluate model. Set write_result to True if you want to write result.
-def model_evaluation(rf,test_df,write_result = False):
+def model_evaluation(test_df, write_result = False,rf_file = 'rf.joblib'):
+    rf = joblib.load(rf_file)
     x = test_df.drop(columns=['fnlwgt', 'income'], axis=1)
     y = test_df['income']
     #Use provided Random Forest Classifier to predict for given y
@@ -55,7 +59,8 @@ def model_evaluation(rf,test_df,write_result = False):
     
     if write_result == True:
         output = pd.DataFrame(y_pred)
-        output.to_csv(os.getcwd()+'/data/RandomForestPredictionTest.csv',header=['RandomForest_predictions'],index=False)
+        output.to_csv('/Users/jasonfzf/Desktop/gradSchool/2023F/dataMining/default_project/income_classify_CISC5790/Prediction/RandomForestPredictionTest.csv',header=['RandomForest_predictions'],index=False)
+        
 
     accuracy = accuracy_score(y, y_pred)
     precision = precision_score(y, y_pred)
@@ -73,16 +78,13 @@ def model_evaluation(rf,test_df,write_result = False):
 
 def main():
     #Read the data
-    df_train = pd.read_csv(os.getcwd()+'/data/census-income-data-cleaned.csv')
-    df_test = pd.read_csv()
+    df_train = pd.read_csv('/Users/jasonfzf/Desktop/gradSchool/2023F/dataMining/default_project/income_classify_CISC5790/Handling Missing Values/census-income.data.csv')
+    df_test = pd.read_csv('/Users/jasonfzf/Desktop/gradSchool/2023F/dataMining/default_project/income_classify_CISC5790/Handling Missing Values/census-income.test.csv')
     rf = build_random_forest(df_train)
     # Evaluate Train dataset
-    model_evaluation(rf,df_train)
+    model_evaluation(rf,df_test,True)
     
     # Evaluate Test dataset
-    
-    
-    
     
 if __name__ == "__main__":
     main()
