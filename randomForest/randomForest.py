@@ -1,13 +1,17 @@
+# Data processing
 import pandas as pd
 import os
 import preprocess as pre
 
 # Modelling
 from imblearn.over_sampling import RandomOverSampler 
+from sklearn.model_selection import RandomizedSearchCV, train_test_split
 from scipy.stats import randint
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
+
+# Visualization and model evaluation
+import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, ConfusionMatrixDisplay
-from sklearn.model_selection import RandomizedSearchCV, train_test_split
 
 def random_forest(df):
     x = df.drop(columns=['fnlwgt', 'income'], axis=1)
@@ -47,6 +51,12 @@ def random_forest(df):
     precision = precision_score(y_test, y_pred)
     recall = recall_score(y_test, y_pred)
 
+    # Create the confusion matrix
+    cm = confusion_matrix(y_test, y_pred)
+    ConfusionMatrixDisplay(confusion_matrix=cm).plot()
+    plt.show()
+    
+    # Print the assessment
     print("Accuracy:", accuracy)
     print("Precision:", precision)
     print("Recall:", recall)
