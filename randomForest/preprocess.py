@@ -11,7 +11,7 @@ df = pd.read_csv(os.getcwd()+'/data/census-income-data.csv', names=schema,sep=',
 
 #Remove All NaN rows
 df = df.dropna()
-
+    
 # util function for label encoding
 def label_encode_categorial_features(df):
     categorial_feature_names = df.dtypes[df.dtypes == "object"].index.to_list() #Find catagorical features
@@ -24,7 +24,11 @@ def label_encode_categorial_features(df):
 
 label_encoder = label_encode_categorial_features(df)
 
+df_test = pd.read_csv(os.getcwd()+'/data/census-income.test.csv',names=schema,sep=',\s',na_values=["?"],engine="python")
+
+
+print(df_test.isnull().sum())
 
 #Save Cleaned Dataset
-df.to_csv(os.getcwd()+'/data/census-income-data-cleaned.csv',index=False)
+#df.to_csv(os.getcwd()+'/data/census-income-data-cleaned.csv',index=False)
 
