@@ -13,6 +13,24 @@ import joblib
 import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, ConfusionMatrixDisplay
 
+def simple_rf(df):
+    x = df.drop(columns=['fnlwgt', 'income'], axis=1)
+    y = df['income']
+    
+    # Fix the problem with imbalanced training dataset
+    ros = RandomOverSampler()
+    ros.fit(x, y)
+    X_resampled, Y_resampled = ros.fit_resample(x, y)
+        
+    # Create a random forest classifier
+    rf = RandomForestClassifier()
+
+    # Fit the random search object to the data
+    rf.fit(X_resampled, Y_resampled)
+    
+    joblib.dump(rf, 's_rf.joblib')
+    
+    return rf
 
 def build_random_forest(df):
     x = df.drop(columns=['fnlwgt', 'income'], axis=1)
@@ -34,7 +52,7 @@ def build_random_forest(df):
     rand_search = RandomizedSearchCV(rf, 
                                     param_distributions = param_dist, 
                                     n_iter=10, 
-                                    cv=10)
+                                    cv=5)
 
     # Fit the random search object to the data
     rand_search.fit(X_resampled, Y_resampled)
@@ -50,8 +68,7 @@ def build_random_forest(df):
     return best_rf
 
 # Make predictions and evaluate model. Set write_result to True if you want to write result.
-def model_evaluation(test_df, write_result = False,rf_file = 'rf.joblib'):
-    rf = joblib.load(rf_file)
+def model_evaluation(test_df, rf, write_result = False):
     x = test_df.drop(columns=['fnlwgt', 'income'], axis=1)
     y = test_df['income']
     
@@ -88,13 +105,24 @@ def main():
     if not os.path.exists(file_path+'/randomForest/rf.joblib'):
         rf = build_random_forest(df_train)
     else:
-        print('exists')
-        
+        rf = joblib.load('rf.joblib')
+    
+    #print(rf.feature_importances_)
+    
     # Evaluate Train dataset
-    model_evaluation(df_train)
+    #model_evaluation(df_train,rf)
     
     # Evaluate Test dataset
-    model_evaluation(df_test,True)
+    #model_evaluation(df_test,rf)
+    
+    s_rf = simple_rf(df_train)
+    
+    print(s_rf.feature_importances_)
+    # Evaluate Train dataset
+    #model_evaluation(df_train,s_rf)
+    
+    # Evaluate Test dataset
+    #model_evaluation(df_test,s_rf)
     
 if __name__ == "__main__":
     main()
