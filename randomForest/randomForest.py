@@ -60,7 +60,7 @@ def model_evaluation(test_df, write_result = False,rf_file = 'rf.joblib'):
     
     if write_result == True:
         output = pd.DataFrame(y_pred)
-        output.to_csv('/Users/jasonfzf/Desktop/gradSchool/2023F/dataMining/default_project/income_classify_CISC5790/Prediction/RandomForestPredictionTest.csv',header=['RandomForest_predictions'],index=False)
+        output.to_csv(os.path.dirname(os.getcwd()) + '/Prediction/RandomForestPredictionTest.csv',header=['RandomForest_predictions'],index=False)
         
 
     accuracy = accuracy_score(y, y_pred)
