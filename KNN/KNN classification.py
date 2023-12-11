@@ -56,7 +56,7 @@ x_train, x_test, y_train, y_test = train_test_split(X,Y, test_size = 0.25, rando
 
 #Source: https://www.geeksforgeeks.org/k-nearest-neighbor-algorithm-in-python/
 #implementing the KNN algorithm
-#Assigning the nearest neighbor to 5 based on results below
+#Assigning the nearest neighbor to 3 based on results below
 
 model1 = KNeighborsClassifier(n_neighbors=3)
 
@@ -74,7 +74,7 @@ y_pred = model1.predict(x_test)
 print(model1.score(x_test, y_test))
 
 
-# In[ ]:
+# In[22]:
 
 
 #Deciding the k-value for the dataset. 
@@ -95,7 +95,7 @@ for i, k in enumerate(neighbor):
     te_acc[i] = model2.score(x_test, y_test)
 
 
-# In[ ]:
+# In[23]:
 
 
 #Now plotting the data
@@ -114,7 +114,7 @@ plt.show()
 ##Should probably take 15 as the nearest neighbor. 
 
 
-# In[15]:
+# In[24]:
 
 
 #now checking from the test data
@@ -122,7 +122,7 @@ test = pd.read_csv ("census-income.test.csv", index_col = None)
 test.head()
 
 
-# In[21]:
+# In[25]:
 
 
 selected_features = ['age', 'workclass', 'education-num','marital-status', 'occupation','relationship', 'race', 'sex', "hours-per-week", "native-country"]
@@ -139,7 +139,7 @@ y_pred_real = model1.predict(x_test_real)
 print(y_pred_real)
 
 
-# In[22]:
+# In[26]:
 
 
 #To check the performance of the model
@@ -147,7 +147,7 @@ print(y_pred_real)
 print(model1.score(x_test_real, y_test_real))
 
 
-# In[23]:
+# In[27]:
 
 
 #Exporting prediction results to csv
@@ -156,13 +156,13 @@ prediction = pd.DataFrame(y_pred_real, columns=['KNN_predictions'])
 prediction.to_csv('KNNPredictionTest.csv', index= False)
 
 
-# In[24]:
+# In[28]:
 
 
 len(prediction)
 
 
-# In[78]:
+# In[29]:
 
 
 get_ipython().system('jupyter nbconvert --to script *.ipynb')
