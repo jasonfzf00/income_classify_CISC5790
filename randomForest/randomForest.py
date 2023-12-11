@@ -11,7 +11,7 @@ import joblib
 
 # Visualization and model evaluation
 import matplotlib.pyplot as plt
-from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, ConfusionMatrixDisplay
+from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score,f1_score, ConfusionMatrixDisplay
 
 def simple_rf(df):
     x = df.drop(columns=['fnlwgt', 'income'], axis=1)
@@ -83,6 +83,7 @@ def model_evaluation(test_df, rf, write_result = False):
     accuracy = accuracy_score(y, y_pred)
     precision = precision_score(y, y_pred)
     recall = recall_score(y, y_pred)
+    f1 = f1_score(y,y_pred)
 
     # Create the confusion matrix
     cm = confusion_matrix(y, y_pred)
@@ -93,6 +94,7 @@ def model_evaluation(test_df, rf, write_result = False):
     print("Accuracy:", accuracy)
     print("Precision:", precision)
     print("Recall:", recall)
+    print("F1-score:", f1)
 
 def main():
     # Read the data
@@ -100,6 +102,19 @@ def main():
     
     df_train = pd.read_csv(file_path+'/Handling Missing Values/census-income.data.csv')
     df_test = pd.read_csv(file_path+'/Handling Missing Values/census-income.test.csv')
+    
+    if not os.path.exists(file_path+'/randomForest/rf.joblib'):
+        s_rf = simple_rf(df_train)
+    else:
+        s_rf = joblib.load('s_rf.joblib')
+    
+    #s_rf = simple_rf(df_train)
+    
+    # Evaluate Train dataset
+    model_evaluation(df_train,s_rf)
+    
+    # Evaluate Test dataset
+    model_evaluation(df_test,s_rf)
 
     # Check if model exists, build if not
     if not os.path.exists(file_path+'/randomForest/rf.joblib'):
@@ -110,19 +125,10 @@ def main():
     #print(rf.feature_importances_)
     
     # Evaluate Train dataset
-    #model_evaluation(df_train,rf)
+    model_evaluation(df_train,rf)
     
     # Evaluate Test dataset
-    #model_evaluation(df_test,rf)
-    
-    s_rf = simple_rf(df_train)
-    
-    print(s_rf.feature_importances_)
-    # Evaluate Train dataset
-    #model_evaluation(df_train,s_rf)
-    
-    # Evaluate Test dataset
-    #model_evaluation(df_test,s_rf)
+    model_evaluation(df_test,rf)
     
 if __name__ == "__main__":
     main()
