@@ -11,8 +11,26 @@ import joblib
 
 # Visualization and model evaluation
 import matplotlib.pyplot as plt
-from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, ConfusionMatrixDisplay
+from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score,f1_score, ConfusionMatrixDisplay
 
+def simple_rf(df):
+    x = df.drop(columns=['fnlwgt', 'income'], axis=1)
+    y = df['income']
+    
+    # Fix the problem with imbalanced training dataset
+    ros = RandomOverSampler()
+    ros.fit(x, y)
+    X_resampled, Y_resampled = ros.fit_resample(x, y)
+        
+    # Create a random forest classifier
+    rf = RandomForestClassifier()
+
+    # Fit the random search object to the data
+    rf.fit(X_resampled, Y_resampled)
+    
+    joblib.dump(rf, 's_rf.joblib')
+    
+    return rf
 
 def build_random_forest(df):
     x = df.drop(columns=['fnlwgt', 'income'], axis=1)
@@ -34,7 +52,7 @@ def build_random_forest(df):
     rand_search = RandomizedSearchCV(rf, 
                                     param_distributions = param_dist, 
                                     n_iter=10, 
-                                    cv=10)
+                                    cv=5)
 
     # Fit the random search object to the data
     rand_search.fit(X_resampled, Y_resampled)
@@ -50,8 +68,7 @@ def build_random_forest(df):
     return best_rf
 
 # Make predictions and evaluate model. Set write_result to True if you want to write result.
-def model_evaluation(test_df, write_result = False,rf_file = 'rf.joblib'):
-    rf = joblib.load(rf_file)
+def model_evaluation(test_df, rf, write_result = False):
     x = test_df.drop(columns=['fnlwgt', 'income'], axis=1)
     y = test_df['income']
     
@@ -60,12 +77,13 @@ def model_evaluation(test_df, write_result = False,rf_file = 'rf.joblib'):
     
     if write_result == True:
         output = pd.DataFrame(y_pred)
-        output.to_csv('/Users/jasonfzf/Desktop/gradSchool/2023F/dataMining/default_project/income_classify_CISC5790/Prediction/RandomForestPredictionTest.csv',header=['RandomForest_predictions'],index=False)
+        output.to_csv(os.path.dirname(os.getcwd()) + '/Prediction/RandomForestPredictionTest.csv',header=['RandomForest_predictions'],index=False)
         
 
     accuracy = accuracy_score(y, y_pred)
     precision = precision_score(y, y_pred)
     recall = recall_score(y, y_pred)
+    f1 = f1_score(y,y_pred)
 
     # Create the confusion matrix
     cm = confusion_matrix(y, y_pred)
@@ -76,6 +94,7 @@ def model_evaluation(test_df, write_result = False,rf_file = 'rf.joblib'):
     print("Accuracy:", accuracy)
     print("Precision:", precision)
     print("Recall:", recall)
+    print("F1-score:", f1)
 
 def main():
     # Read the data
@@ -83,18 +102,33 @@ def main():
     
     df_train = pd.read_csv(file_path+'/Handling Missing Values/census-income.data.csv')
     df_test = pd.read_csv(file_path+'/Handling Missing Values/census-income.test.csv')
+    
+    if not os.path.exists(file_path+'/randomForest/rf.joblib'):
+        s_rf = simple_rf(df_train)
+    else:
+        s_rf = joblib.load('s_rf.joblib')
+    
+    #s_rf = simple_rf(df_train)
+    
+    # Evaluate Train dataset
+    model_evaluation(df_train,s_rf)
+    
+    # Evaluate Test dataset
+    model_evaluation(df_test,s_rf)
 
     # Check if model exists, build if not
     if not os.path.exists(file_path+'/randomForest/rf.joblib'):
         rf = build_random_forest(df_train)
     else:
-        print('exists')
-        
+        rf = joblib.load('rf.joblib')
+    
+    #print(rf.feature_importances_)
+    
     # Evaluate Train dataset
-    model_evaluation(df_train)
+    model_evaluation(df_train,rf)
     
     # Evaluate Test dataset
-    model_evaluation(df_test,True)
+    model_evaluation(df_test,rf)
     
 if __name__ == "__main__":
     main()
