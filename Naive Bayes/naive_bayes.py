@@ -32,8 +32,8 @@ y_pred = naive_bayes_model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 classification_report_train = classification_report(y_test, y_pred)
 
-print(f"Accuracy: {accuracy}")
-print("Classification Report:")
+print(f"Train Data Accuracy: {accuracy}")
+print("Train Data Classification Report:")
 print(classification_report_train)
 
 # Load cleaned testing data
