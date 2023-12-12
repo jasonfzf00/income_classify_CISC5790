@@ -1,7 +1,4 @@
 # Income Classify CISC5790 2023 Fall
-
-Please refer to project.ipynb for our written response.
-
 ## Contributor
 
 Shein Htut Tun Lwin, and Saujan Khapung, Zefeng (Jason) Fu
