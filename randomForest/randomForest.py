@@ -128,7 +128,7 @@ def main():
     model_evaluation(df_train,rf)
     
     # Evaluate Test dataset
-    model_evaluation(df_test,rf)
+    model_evaluation(df_test,rf,True)
     
 if __name__ == "__main__":
     main()
