@@ -11,7 +11,7 @@ import joblib
 
 # Visualization and model evaluation
 import matplotlib.pyplot as plt
-from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score,f1_score, ConfusionMatrixDisplay
+from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score,f1_score, roc_curve,roc_auc_score, ConfusionMatrixDisplay
 
 def simple_rf(df):
     x = df.drop(columns=['fnlwgt', 'income'], axis=1)
@@ -95,6 +95,25 @@ def model_evaluation(test_df, rf, write_result = False):
     print("Precision:", precision)
     print("Recall:", recall)
     print("F1-score:", f1)
+    
+    #ROC Curve and AUROC
+    y_pred_prob = rf.predict_proba(x)[:, 1] 
+    fpr, tpr, thresholds = roc_curve(y, y_pred_prob, pos_label=1)
+    roc_auc = roc_auc_score(y, y_pred_prob) 
+    print('AUROC:',roc_auc)
+    
+    # Plot the ROC curve 
+    plt.plot(fpr, tpr, label='ROC curve (area = %0.2f)' % roc_auc) 
+    # roc curve for tpr = fpr  
+    plt.plot([0, 1], [0, 1], 'k--', label='Random classifier') 
+    plt.xlabel('False Positive Rate') 
+    plt.ylabel('True Positive Rate') 
+    plt.title('ROC Curve') 
+    plt.legend(loc="lower right") 
+    plt.show()
+    
+
+    
 
 def main():
     # Read the data
@@ -114,7 +133,7 @@ def main():
     model_evaluation(df_train,s_rf)
     
     # Evaluate Test dataset
-    model_evaluation(df_test,s_rf)
+    model_evaluation(df_test,s_rf,True)
 
     # Check if model exists, build if not
     if not os.path.exists(file_path+'/randomForest/rf.joblib'):
